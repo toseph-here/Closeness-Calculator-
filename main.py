@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request
 from telegram import Update, Bot
-from telegram.ext import Application, CommandHandler, ContextTypes, Dispatcher, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from telegram.ext.dispatcher import Dispatcher as LegacyDispatcher
 from telegram.ext._utils.types import BD
 from love_logic import calculate_love_percentage  # Tumhara logic yahan use hoga
