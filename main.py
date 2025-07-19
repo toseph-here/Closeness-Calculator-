@@ -1,28 +1,31 @@
+# main.py
+
 import os
-import asyncio
-from telegram.ext import Application, CommandHandler
-from love_logic import calculate_love_percentage  # if this is in another file
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from love_logic import calculate_love_percentage
 
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-if not TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN not set in environment variables!")
+TOKEN = os.getenv("BOT_TOKEN")
 
-async def start(update, context):
-    await update.message.reply_text("Welcome! Use /love Name1 and Name2")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Welcome to Closeness Calculator ❤️!\nUse /love Name1 and Name2 or /love Name1 for Name2")
 
-async def love(update, context):
-    input_text = " ".join(context.args)
-    response = calculate_love_percentage(input_text)
+async def love_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_input = update.message.text
+    response = calculate_love_percentage(user_input)
     await update.message.reply_text(response)
 
-async def main():
-    app = Application.builder().token(TOKEN).build()
-    
+def main():
+    if not TOKEN:
+        print("❌ BOT_TOKEN not found in environment!")
+        return
+
+    app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("love", love))
-    
+    app.add_handler(CommandHandler("love", love_command))
+
     print("🤖 Bot is running...")
-    await app.run_polling()
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
