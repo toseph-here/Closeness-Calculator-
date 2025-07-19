@@ -27,9 +27,9 @@ def home():
     return "Bot is alive!"
 
 @app.route("/webhook", methods=["POST"])
-async def webhook():
+def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    await application.process_update(update)
+    application.create_task(application.process_update(update))
     return "ok"
 
 if __name__ == "__main__":
