@@ -1,52 +1,28 @@
 import os
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import asyncio
+from telegram.ext import Application, CommandHandler
+from love_logic import calculate_love_percentage  # if this is in another file
 
-# ✅ Get Telegram Bot Token from Environment Variable
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 if not TOKEN:
-    raise ValueError("⚠️ TELEGRAM_BOT_TOKEN not set in environment variables!")
+    raise ValueError("TELEGRAM_BOT_TOKEN not set in environment variables!")
 
-# ❤️ Love percentage calculator
-def calculate_love_percentage(name1, name2):
-    combined = (name1 + name2).lower().replace(" ", "")
-    counts = {}
-    for char in combined:
-        counts[char] = counts.get(char, 0) + 1
-    numbers = [str(count) for count in counts.values()]
-    while len(numbers) > 2:
-        temp = []
-        for i in range(len(numbers) // 2):
-            total = int(numbers[i]) + int(numbers[-(i + 1)])
-            temp.append(str(total))
-        if len(numbers) % 2 == 1:
-            temp.append(numbers[len(numbers) // 2])
-        numbers = temp
-    return int("".join(numbers))
+async def start(update, context):
+    await update.message.reply_text("Welcome! Use /love Name1 and Name2")
 
-# 🧾 /love command handler
-async def love(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        args = context.args
-        if len(args) >= 3 and args[-2].lower() == "and":
-            name1 = " ".join(args[:-2])
-            name2 = args[-1]
-            percentage = calculate_love_percentage(name1, name2)
-            response = f"❤️ Love percentage between {name1} and {name2} is {percentage}%"
-        else:
-            response = "❌ Use the format: /love Name1 and Name2"
-        await update.message.reply_text(response)
-    except Exception as e:
-        await update.message.reply_text(f"Error: {e}")
+async def love(update, context):
+    input_text = " ".join(context.args)
+    response = calculate_love_percentage(input_text)
+    await update.message.reply_text(response)
 
-# 🚀 Bot start function
 async def main():
-    app = ApplicationBuilder().token(TOKEN).build()
+    app = Application.builder().token(TOKEN).build()
+    
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("love", love))
+    
     print("🤖 Bot is running...")
     await app.run_polling()
 
-# 🔰 Entry point
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
