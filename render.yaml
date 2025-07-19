@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: telegram-love-bot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: "python main.py"
+    envVars:
+      TOKEN = os.getenv("BOT_TOKEN")
