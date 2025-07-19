@@ -2,7 +2,12 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# Love calculator function
+# ✅ Get Telegram Bot Token from Environment Variable
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+if not TOKEN:
+    raise ValueError("⚠️ TELEGRAM_BOT_TOKEN not set in environment variables!")
+
+# ❤️ Love percentage calculator
 def calculate_love_percentage(name1, name2):
     combined = (name1 + name2).lower().replace(" ", "")
     counts = {}
@@ -19,7 +24,7 @@ def calculate_love_percentage(name1, name2):
         numbers = temp
     return int("".join(numbers))
 
-# /love command handler
+# 🧾 /love command handler
 async def love(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         args = context.args
@@ -34,23 +39,14 @@ async def love(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"Error: {e}")
 
-# Main function
+# 🚀 Bot start function
 async def main():
-    from telegram.ext import ApplicationBuilder
-    import asyncio
-
-    TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-    if not TOKEN:
-        raise ValueError("TELEGRAM_BOT_TOKEN is not set in environment variables.")
-
     app = ApplicationBuilder().token(TOKEN).build()
-
     app.add_handler(CommandHandler("love", love))
-
-    print("Bot is running...")
+    print("🤖 Bot is running...")
     await app.run_polling()
 
-# Entry point
+# 🔰 Entry point
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
