@@ -1,10 +1,8 @@
 import os
 from flask import Flask, request
 from telegram import Update, Bot
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from telegram.ext.dispatcher import Dispatcher as LegacyDispatcher
-from telegram.ext._utils.types import BD
-from love_logic import calculate_love_percentage  # Tumhara logic yahan use hoga
+from telegram.ext import Application, CommandHandler, ContextTypes
+from love_logic import calculate_love_percentage
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -17,9 +15,9 @@ def home():
     return "Bot is alive!"
 
 @app.route("/webhook", methods=["POST"])
-def webhook():
+async def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    application.update_queue.put_nowait(update)
+    await application.process_update(update)
     return "ok"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
